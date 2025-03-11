@@ -1,12 +1,18 @@
-import express from "express";
-import authRouter from "./routes/auth.routes.js";
+import { app } from "./app.js";
+import dotenv from "dotenv";
+import connectDB from "./lib/db.js";
 
-const app = express();
+dotenv.config({ path: "./.env" });
 
-app.listen(8000, () => {
-  console.log("listening on", 8000);
+// MongoDB Connection Callback
+
+connectDB().then(() => {
+  app.on("error", (error) => {
+    console.error("App Error:-", error);
+    process.exit(1);
+  });
+
+  app.listen(process.env.PORT || 8000, () => {
+    console.log(`Server is listening on ${process.env.PORT}`);
+  });
 });
-
-// Routes
-
-app.use("/api/auth/", authRouter);
