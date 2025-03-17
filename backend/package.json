@@ -7,7 +7,7 @@
     "nodemon": "^3.1.9"
   },
   "scripts": {
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon --env-file=./.env src/index.js"
   },
   "keywords": [],
   "author": "",
