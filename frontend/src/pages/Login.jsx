@@ -37,20 +37,25 @@ function Login() {
           .post("/auth/login", data)
           .then((res) => {
             const result = res.data.data;
-
+            toast.success(result.message);
             setData({ ...records });
             dispatch(setUser(result?.user));
             dispatch(setToken(result.accessToken));
-            localStorage.setItem("refreshToken", result.refreshToken);
-            localStorage.setItem("accessToken", result.accessToken);
-            toast.success(result.message);
+            localStorage.setItem(
+              "refreshToken",
+              JSON.stringify(result.refreshToken)
+            );
+            localStorage.setItem(
+              "accessToken",
+              JSON.stringify(result.accessToken)
+            );
             setTimeout(() => {
               navigate("/");
             }, 200);
           })
           .catch((err) => {
             console.log(err);
-            toast.error(err.response.data.message);
+            toast.error(err?.response?.data?.message || err?.message);
           });
       })
       .catch((err) => {
@@ -71,7 +76,7 @@ function Login() {
           <h3 className="w-full text-left font-bold text-secondaryGreen">
             Welcome to Chat app!
           </h3>
-          <div className="flexColWFull">
+          <div className="flexColWFull w-full">
             <label htmlFor="email">Email</label>
             <input
               type="text"
@@ -87,7 +92,7 @@ function Login() {
               </p>
             )}
           </div>
-          <div className="flexColWFull">
+          <div className="flexColWFull w-full">
             <label htmlFor="password">Password</label>
             <input
               type="password"
@@ -103,7 +108,7 @@ function Login() {
               </p>
             )}
           </div>
-          <div className="flexColWFull mt-3">
+          <div className="flexColWFull mt-3 w-full">
             <button className="btn-dark transform hover:scale-105">
               Login
             </button>

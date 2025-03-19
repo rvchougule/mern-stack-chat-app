@@ -1,5 +1,6 @@
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
+import { ApiError } from "../utils/ApiError.js";
 
 export const verifyJwt = async (req, res, next) => {
   try {
@@ -9,7 +10,7 @@ export const verifyJwt = async (req, res, next) => {
 
     if (!token) {
       console.log("Unauthorized access");
-      res.status(401).json({ message: "Unauthorized access" });
+      throw new ApiError(401, "Unauthorized access");
     }
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
@@ -19,7 +20,7 @@ export const verifyJwt = async (req, res, next) => {
     );
 
     if (!user) {
-      res.status(404).json({ message: "Invalid Access Token" });
+      throw new ApiError(401, "Invalid Access Token");
     }
 
     req.user = user;

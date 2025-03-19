@@ -10,11 +10,13 @@ app.use(
     credentials: true,
   })
 );
-
+app.options("*", cors());
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
+
+app.get("/", (req, res) => res.send("Testing"));
 
 import authRouter from "./routes/auth.routes.js";
 import messageRouter from "./routes/messages.routes.js";

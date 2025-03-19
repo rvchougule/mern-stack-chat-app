@@ -33,7 +33,6 @@ export const signup = asyncHandler(async (req, res) => {
     }
 
     const profileImgPath = req.file?.path;
-    console.log(req.file);
 
     if (!profileImgPath) {
       throw new ApiError(401, "Profile img required");
@@ -60,9 +59,12 @@ export const signup = asyncHandler(async (req, res) => {
       throw new ApiError(501, "Somethign went wrong while sign up.");
     }
 
-    return res.status(201).json({ message: "User sign up successfully !" });
+    return res
+      .status(201)
+      .json(new ApiResponse(201, createdUser, "User registered successfully."));
   } catch (error) {
     fs.unlinkSync(req.file?.path);
+    throw new ApiError(501, `${error}`);
   }
 });
 
@@ -222,9 +224,9 @@ export const getCurrentUser = asyncHandler(async (req, res) => {
 
 // user update
 export const updateAccountDetails = asyncHandler(async (req, res) => {
-  const { email, fullName } = req.body;
+  const { fullName } = req.body;
 
-  if (!fullName && !email) {
+  if (!fullName) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -233,7 +235,6 @@ export const updateAccountDetails = asyncHandler(async (req, res) => {
     {
       $set: {
         fullName,
-        email,
       },
     },
     {

@@ -25,7 +25,7 @@ router.route("/refresh-token").post(verifyJwt, refreshToken);
 // bug in password change
 router.route("/change-password").post(verifyJwt, changePassword);
 router.route("/current-user").get(verifyJwt, getCurrentUser);
-router.route("/update-account").patch(verifyJwt, updateAccountDetails);
+router.route("/update-account").post(verifyJwt, updateAccountDetails);
 
 router
   .route("/update-profile")

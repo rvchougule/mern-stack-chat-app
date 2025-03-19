@@ -3,11 +3,14 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { Message } from "../models/message.model.js";
+import { Message, Conversation } from "../models/message.model.js";
 
+// user for explorer
 export const getUsersForSidebar = asyncHandler(async (req, res) => {
   const userId = req.user?._id;
-  const filteredUsers = await User.find({ _id: { $ne: userId } });
+  const filteredUsers = await User.find({ _id: { $ne: userId } }).select(
+    "-password -refreshToken"
+  );
 
   return res
     .status(200)
@@ -22,7 +25,7 @@ export const getMessages = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid user chat id");
   }
 
-  const messages = await Message.find({
+  const messages = await Conversation.find({
     $or: [
       { senderId: userId, receiverId: userToChatId },
       { senderId: userToChatId, receiverId: userId },

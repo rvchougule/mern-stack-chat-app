@@ -2,10 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   _id: "",
-  name: "",
+  fullName: "",
   email: "",
-  profile_pic: "",
-  token: "",
+  profile_img: "",
+  token: JSON.parse(localStorage.getItem("accessToken")) || "",
   onlineUser: [],
   socketConnection: null,
 };
@@ -16,18 +16,18 @@ export const userSlice = createSlice({
   reducers: {
     setUser: (state, action) => {
       state._id = action.payload._id;
-      state.name = action.payload.name;
+      state.fullName = action.payload.fullName;
       state.email = action.payload.email;
-      state.profile_pic = action.payload.profile_pic;
+      state.profile_img = action.payload.profile_img;
     },
     setToken: (state, action) => {
       state.token = action.payload;
     },
     logout: (state) => {
       state._id = "";
-      state.name = "";
+      state.fullName = "";
       state.email = "";
-      state.profile_pic = "";
+      state.profile_img = "";
       state.token = "";
       state.socketConnection = null;
     },

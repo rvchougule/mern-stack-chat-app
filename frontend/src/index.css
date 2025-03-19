@@ -73,7 +73,7 @@ code {
 
   /* flex */
   .flexColWFull {
-    @apply flex flex-col gap-2 w-full;
+    @apply flex flex-col gap-2;
   }
   .flexCenter {
     @apply flex items-center justify-center;

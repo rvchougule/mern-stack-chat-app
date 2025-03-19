@@ -4,6 +4,8 @@ import Home from "../pages/Home";
 import ForgotPassword from "../pages/ForgotPassword";
 import Login from "../pages/Login";
 import SignUp from "../pages/SignUp";
+import ProtectedRoute from "../components/ProtectedRoute";
+import MessagePage from "../pages/MessagePage";
 
 const router = createBrowserRouter([
   {
@@ -24,11 +26,17 @@ const router = createBrowserRouter([
       },
       {
         path: "",
-        element: <Home />,
+        element: <ProtectedRoute />,
         children: [
           {
-            path: ":userId",
-            element: <></>,
+            path: "",
+            element: <Home />,
+            children: [
+              {
+                path: ":userId",
+                element: <MessagePage />,
+              },
+            ],
           },
         ],
       },

@@ -51,12 +51,12 @@ function SignUp() {
         axios
           .post("/auth/signup", userData)
           .then((res) => {
-            if (res.response.data.success) {
+            if (res.data.success) {
               setData({ ...records });
-              toast.success(res.response.data.message);
+              toast.success(res.data.message);
               navigate("/login");
             } else {
-              toast.error(res.response.data.message);
+              toast.error(res.data.message);
             }
           })
           .catch((err) => {
@@ -82,7 +82,7 @@ function SignUp() {
           <h3 className="w-full text-left font-bold text-secondaryGreen">
             Welcome to Chat app!
           </h3>
-          <div className="flexColWFull">
+          <div className="flexColWFull w-full">
             <label htmlFor="fullName">Full Name</label>
             <input
               type="text"
@@ -98,7 +98,7 @@ function SignUp() {
               </p>
             )}
           </div>
-          <div className="flexColWFull">
+          <div className="flexColWFull w-full">
             <label htmlFor="email">Email</label>
             <input
               type="text"
@@ -114,7 +114,7 @@ function SignUp() {
               </p>
             )}
           </div>
-          <div className="flexColWFull">
+          <div className="flexColWFull w-full">
             <label htmlFor="password">Password</label>
             <input
               type="password"
@@ -130,7 +130,7 @@ function SignUp() {
               </p>
             )}
           </div>
-          <div className="flexColWFull">
+          <div className="flexColWFull w-full">
             <label htmlFor="profile_img">
               Profile Photo :
               <div className="h-14 bg-slate-200 flex justify-center items-center border rounded hover:border-primary cursor-pointer">
@@ -161,7 +161,7 @@ function SignUp() {
               </p>
             )}
           </div>
-          <div className="flexColWFull mt-3">
+          <div className="flexColWFull w-full mt-3">
             <button className="btn-dark transform hover:scale-105">
               Sign Up
             </button>
