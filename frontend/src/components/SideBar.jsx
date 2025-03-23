@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 
 const SideBar = () => {
   const user = useSelector((state) => state.user);
-  const [explorer, setExplorer] = useState(false);
+  const [explorer, setExplorer] = useState(true);
   const [editUserOpen, setEditUserOpen] = useState(false);
   const [allUser, setAllUser] = useState([]);
   const [openSearchUser, setOpenSearchUser] = useState(false);

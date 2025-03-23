@@ -6,6 +6,7 @@ import Login from "../pages/Login";
 import SignUp from "../pages/SignUp";
 import ProtectedRoute from "../components/ProtectedRoute";
 import MessagePage from "../pages/MessagePage";
+import { SocketProvider } from "../contexts/SocketConnection";
 
 const router = createBrowserRouter([
   {
@@ -30,7 +31,11 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <Home />,
+            element: (
+              <SocketProvider>
+                <Home />
+              </SocketProvider>
+            ),
             children: [
               {
                 path: ":userId",
