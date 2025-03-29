@@ -190,16 +190,17 @@ const MessagePage = () => {
             videoUrl: response?.url,
           };
         });
+        setLoading(false);
       });
 
       // Listen for upload error
       socketConnection.on("upload-error", (error) => {
         console.error("Upload Error:", error);
         toast.error(error.message);
+        setLoading(false);
       });
     } catch (error) {
       console.log(error);
-    } finally {
       setLoading(false);
     }
   };

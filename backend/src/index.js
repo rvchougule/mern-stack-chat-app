@@ -85,8 +85,6 @@ connectDB().then(() => {
           }
 
           const tempFilePath = path.join(publicDir, filename);
-          console.log(__filename, __dirname, publicDir, tempFilePath);
-          console.log(filename, data);
 
           // Save the file temporarily
           fs.writeFileSync(tempFilePath, Buffer.from(new Uint8Array(data)));
@@ -103,7 +101,7 @@ connectDB().then(() => {
             return;
           }
 
-          console.log("File uploaded to Cloudinary:", cloudinaryResponse?.url);
+          // console.log("File uploaded to Cloudinary:", cloudinaryResponse?.url);
 
           // Emit success message with Cloudinary file URL
           socket.emit("upload-success", {

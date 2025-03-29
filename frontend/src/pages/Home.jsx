@@ -1,6 +1,6 @@
 import SideBar from "../components/SideBar";
 import { Outlet, useLocation } from "react-router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import io from "socket.io-client";
 import { setOnlineUser } from "../redux/userSlice";
 import { useEffect, useState } from "react";
@@ -11,6 +11,9 @@ function Home() {
   const location = useLocation();
   const { setSocketConnection } = useSocket();
   const [explorer, setExplorer] = useState(true);
+  const [conversationUser, setConversationUser] = useState([]);
+  const user = useSelector((state) => state.user);
+
   const basePath = location.pathname === "/";
 
   /***socket connection */
@@ -22,7 +25,6 @@ function Home() {
     });
 
     socketConnection.on("onlineUser", (data) => {
-      console.log(data);
       dispatch(setOnlineUser(data));
     });
 
@@ -33,18 +35,56 @@ function Home() {
     };
   }, []);
 
+  const { socketConnection } = useSocket();
+
+  /****** get sidebar conversation users******/
+  useEffect(() => {
+    if (socketConnection) {
+      socketConnection.emit("sidebar", user._id);
+
+      socketConnection.on("conversation", (data) => {
+        console.log("conversations", data);
+        const conversationUserData = data.map((convUser) => {
+          if (convUser.sender._id === convUser.receiver._id) {
+            return {
+              ...convUser,
+              userDetails: convUser?.sender,
+            };
+          } else if (convUser.receiver._id !== user._id) {
+            return {
+              ...convUser,
+              userDetails: convUser.receiver,
+            };
+          } else {
+            return {
+              ...convUser,
+              userDetails: convUser.sender,
+            };
+          }
+        });
+
+        setConversationUser(conversationUserData);
+      });
+    }
+  }, [socketConnection, user]);
+
   return (
     <div className="flex bg-slate-100  overflow-hidden">
-      <SideBar explorer={explorer} setExplorer={setExplorer} />
+      {/* Sidebar component */}
+      <SideBar
+        explorer={explorer}
+        setExplorer={setExplorer}
+        conversationUser={conversationUser}
+      />
       <section
-        className={`${explorer ? "hidden xs:flex" : "flex"} w-full ${
-          basePath && "hidden"
+        className={`${explorer ? "hidden xs:flex w-full" : "flex w-full"} ${
+          basePath && "hidden w-0"
         }`}
       >
         <Outlet />
       </section>
       <div
-        className={`justify-center items-center flex-col gap-2 bg-bgImg bg-cover bg-center w-full hidden ${
+        className={`justify-center items-center flex-col gap-2 bg-bgImg bg-cover bg-center  w-full hidden ${
           !basePath ? "hidden" : "lg:flex"
         }`}
       >

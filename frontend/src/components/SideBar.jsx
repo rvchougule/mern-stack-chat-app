@@ -16,47 +16,17 @@ import { toast } from "react-toastify";
 import useSocket from "../hooks/useSocket";
 import moment from "moment";
 
-const SideBar = ({ explorer, setExplorer }) => {
+const SideBar = ({ explorer, setExplorer, conversationUser }) => {
   const user = useSelector((state) => state.user);
-  const [editUserOpen, setEditUserOpen] = useState(false);
-  const [allUser, setAllUser] = useState([]);
-  const [conversationUser, setConversationUser] = useState([]);
-  const [openSearchUser, setOpenSearchUser] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { socketConnection } = useSocket();
 
+  const [editUserOpen, setEditUserOpen] = useState(false);
+  const [allUser, setAllUser] = useState([]);
+  const [openSearchUser, setOpenSearchUser] = useState(false);
   useEffect(() => {
-    if (socketConnection) {
-      socketConnection.emit("sidebar", user._id);
-
-      socketConnection.on("conversation", (data) => {
-        console.log("conversation", data);
-
-        const conversationUserData = data.map((convUser) => {
-          if (convUser?.sender?._id === convUser?.receiver?._id) {
-            return {
-              ...convUser,
-              userDetails: convUser?.sender,
-            };
-          } else if (convUser?.receiver?._id !== user?._id) {
-            return {
-              ...convUser,
-              userDetails: convUser.receiver,
-            };
-          } else {
-            return {
-              ...convUser,
-              userDetails: convUser.sender,
-            };
-          }
-        });
-
-        setConversationUser(conversationUserData);
-      });
-    }
-  }, [socketConnection, user]);
-  useEffect(() => {
+    if (!socketConnection) return;
     axios
       .get("/message/users")
       .then((res) => {
@@ -66,11 +36,10 @@ const SideBar = ({ explorer, setExplorer }) => {
           toast.error(res?.response?.data?.message);
         }
       })
-      .catch((err) => {
-        console.log(err);
-        toast.error(err?.response?.data?.message);
+      .catch(() => {
+        // console.log(err);
       });
-  }, [user]);
+  }, [socketConnection, user]);
 
   return (
     <div className="h-[100vh] flex">
@@ -181,12 +150,12 @@ const SideBar = ({ explorer, setExplorer }) => {
                     </div>
                     <span className="text-xs text-end ml-4 float-end block   xs:w-fit">
                       {moment(conv?.lastMsg.createdAt).format("H:mm")}
+                      {Boolean(conv.unseenMsg) && (
+                        <p className="text-xs w-4 h-4 flex justify-center items-center ml-auto p-1 bg-primaryGreenOne text-black font-semibold rounded-full">
+                          {conv?.unseenMsg}
+                        </p>
+                      )}
                     </span>
-                    {Boolean(conv?.unseenMsg) && (
-                      <p className="text-xs w-6 h-6 flex justify-center items-center ml-auto p-1 bg-primary text-white font-semibold rounded-full">
-                        {conv?.unseenMsg}
-                      </p>
-                    )}
                   </NavLink>
                 );
               })}
