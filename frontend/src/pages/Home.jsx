@@ -3,13 +3,14 @@ import { Outlet, useLocation } from "react-router";
 import { useDispatch } from "react-redux";
 import io from "socket.io-client";
 import { setOnlineUser } from "../redux/userSlice";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useSocket from "../hooks/useSocket";
 
 function Home() {
   const dispatch = useDispatch();
   const location = useLocation();
   const { setSocketConnection } = useSocket();
+  const [explorer, setExplorer] = useState(true);
   const basePath = location.pathname === "/";
 
   /***socket connection */
@@ -34,8 +35,12 @@ function Home() {
 
   return (
     <div className="flex bg-slate-100  overflow-hidden">
-      <SideBar />
-      <section className={`w-full ${basePath && "hidden"}`}>
+      <SideBar explorer={explorer} setExplorer={setExplorer} />
+      <section
+        className={`${explorer ? "hidden xs:flex" : "flex"} w-full ${
+          basePath && "hidden"
+        }`}
+      >
         <Outlet />
       </section>
       <div

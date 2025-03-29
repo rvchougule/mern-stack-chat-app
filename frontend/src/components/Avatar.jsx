@@ -1,6 +1,6 @@
 import React from "react";
 
-const extractName = (name) => {
+const extractName = (name = "") => {
   const name_split = name.split(" ");
   let userName = "";
   if (name_split.length == 3) {

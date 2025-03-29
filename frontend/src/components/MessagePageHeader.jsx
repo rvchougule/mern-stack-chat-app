@@ -8,7 +8,13 @@ const MessagePageHeader = ({ user }) => {
       <Avatar url={user?.profile_img} name={user?.fullName} />
       <div className="w-full">
         <h2 className="font-bold text-slate-600">{user?.fullName}</h2>
-        <p>{user?.online ? "Online" : "Offline"}</p>
+        <p>
+          {user?.online ? (
+            <span className="text-primaryGreenOne">Online</span>
+          ) : (
+            <span className="text-slate-400">Offline</span>
+          )}
+        </p>
       </div>
       <div className="self-center ">
         <button className="cursor-pointer hover:text-primaryGreenOne">

@@ -12,6 +12,7 @@ function useRefreshToken() {
   const flag = useRef(true);
 
   const refreshAccessToken = async () => {
+    console.log("refreshToken called");
     if (!refreshToken) return null;
     axios
       .post("/auth/refresh-token", { refreshToken })
@@ -33,6 +34,7 @@ function useRefreshToken() {
       })
       .catch((err) => {
         console.error(err);
+        console.log("refreshtoken failed");
         navigate("/login");
       });
   };

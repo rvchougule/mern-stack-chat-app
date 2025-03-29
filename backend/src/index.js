@@ -5,9 +5,12 @@ import { getUserDetailsFromToken } from "./helpers/getUserDetailsFromToken.js";
 import { User } from "./models/user.model.js";
 import { Conversation, Message } from "./models/message.model.js";
 import { getConversation } from "./helpers/getConversation.js";
-
+import path from "path";
+import fs from "fs";
 import { Server } from "socket.io";
 import http from "http";
+import { uploadOnCloudinary } from "./utils/cloudinary.js";
+import { fileURLToPath } from "url";
 
 dotenv.config({ path: "./.env" });
 
@@ -67,6 +70,49 @@ connectDB().then(() => {
           socket.emit("message", getConversationMessage?.messages || []);
         } catch (error) {
           console.log(error);
+        }
+      });
+
+      socket.on("file-upload", async ({ filename, data }) => {
+        try {
+          const __filename = fileURLToPath(import.meta.url);
+          const __dirname = path.dirname(__filename);
+          const publicDir = path.join(__dirname, "public");
+
+          // Ensure the public folder exists
+          if (!fs.existsSync(publicDir)) {
+            fs.mkdirSync(publicDir, { recursive: true });
+          }
+
+          const tempFilePath = path.join(publicDir, filename);
+          console.log(__filename, __dirname, publicDir, tempFilePath);
+          console.log(filename, data);
+
+          // Save the file temporarily
+          fs.writeFileSync(tempFilePath, Buffer.from(new Uint8Array(data)));
+
+          // Upload to Cloudinary
+          const cloudinaryResponse = await uploadOnCloudinary(
+            tempFilePath,
+            "chat-app"
+          );
+          if (!cloudinaryResponse) {
+            socket.emit("upload-error", {
+              message: "Cloudinary upload failed",
+            });
+            return;
+          }
+
+          console.log("File uploaded to Cloudinary:", cloudinaryResponse?.url);
+
+          // Emit success message with Cloudinary file URL
+          socket.emit("upload-success", {
+            message: "File uploaded successfully",
+            url: cloudinaryResponse?.url,
+          });
+        } catch (error) {
+          console.error("File upload error:", error);
+          socket.emit("upload-error", { message: "File upload failed" });
         }
       });
 
