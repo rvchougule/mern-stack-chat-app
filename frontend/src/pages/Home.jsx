@@ -43,7 +43,7 @@ function Home() {
       socketConnection.emit("sidebar", user._id);
 
       socketConnection.on("conversation", (data) => {
-        console.log("conversations", data);
+        // console.log("conversations", data);
         const conversationUserData = data.map((convUser) => {
           if (convUser.sender._id === convUser.receiver._id) {
             return {
@@ -77,21 +77,19 @@ function Home() {
         conversationUser={conversationUser}
       />
       <section
-        className={`${explorer ? "hidden xs:flex w-full" : "flex w-full"} ${
-          basePath && "hidden w-0"
-        }`}
+        className={`${explorer ? "hidden xs:flex w-full" : "flex w-full"} `}
       >
         <Outlet />
+        <div
+          className={`justify-center items-center flex-col gap-2 bg-bgImg bg-cover bg-center  w-full hidden ${
+            !basePath ? "hidden" : "xs:flex"
+          }`}
+        >
+          <p className="text-xl font-bold mt-2 text-primaryGreenOne">
+            Select user to send message
+          </p>
+        </div>
       </section>
-      <div
-        className={`justify-center items-center flex-col gap-2 bg-bgImg bg-cover bg-center  w-full hidden ${
-          !basePath ? "hidden" : "lg:flex"
-        }`}
-      >
-        <p className="text-xl font-bold mt-2 text-primaryGreenOne">
-          Select user to send message
-        </p>
-      </div>
     </div>
   );
 }

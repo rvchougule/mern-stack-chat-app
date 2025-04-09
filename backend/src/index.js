@@ -11,6 +11,7 @@ import { Server } from "socket.io";
 import http from "http";
 import { uploadOnCloudinary } from "./utils/cloudinary.js";
 import { fileURLToPath } from "url";
+import { deleteChats } from "./helpers/deleteChats.js";
 
 dotenv.config({ path: "./.env" });
 
@@ -177,6 +178,12 @@ connectDB().then(() => {
         } catch (error) {
           console.log(error);
         }
+      });
+
+      // delete chat
+      socket.on("delete-chat", async (data) => {
+        await deleteChats(data);
+        socket.emit("delete-message", true);
       });
 
       //sidebar

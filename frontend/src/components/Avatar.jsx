@@ -22,7 +22,11 @@ function Avatar({ url, name }) {
   return (
     <div className="flexCenter w-8 h-8 lg:w-10 lg:h-10 ring-1 rounded-full bg-slate-400 overflow-hidden cursor-pointer">
       {url ? (
-        <img src={url} alt="" className="w-full object-cover " />
+        <img
+          src={url}
+          alt=""
+          className="w-full h-full object-cover object-center "
+        />
       ) : (
         <span className=" text-lg lg:text-xl font-bold text-black  px-1 py-1">
           {nameInitial}

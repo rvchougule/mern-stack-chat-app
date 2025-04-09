@@ -35,6 +35,8 @@ const MessagePage = () => {
   const currentMessage = useRef(null);
   const currentMessageEndRef = useRef(null);
 
+  const [selectedMessagesList, setSelectedMessageList] = useState([]);
+
   useEffect(() => {
     if (!socketConnection) {
       navigate("/login");
@@ -205,10 +207,55 @@ const MessagePage = () => {
     }
   };
 
+  const handleMsgDblClick = (event) => {
+    console.log(event.target.closest(".message"));
+    const messageId = event.target.closest(".message")?.dataset.id;
+    if (messageId) {
+      // const id = Number(messageId);
+      setSelectedMessageList((prev) =>
+        prev.includes(messageId)
+          ? prev.filter((msgId) => msgId !== messageId)
+          : [...prev, messageId]
+      );
+    }
+  };
+
+  const handleSelectedChat = (e) => {
+    const val = e.target.value;
+    setSelectedMessageList((prev) =>
+      prev.includes(val)
+        ? prev.filter((msgId) => msgId !== val)
+        : [...prev, val]
+    );
+  };
+
+  const handleDeleteChat = () => {
+    if (socketConnection) {
+      socketConnection.emit("delete-chat", selectedMessagesList);
+
+      socketConnection?.on("delete-message", (data) => {
+        console.log("delte-message", data);
+        setSelectedMessageList([]);
+        if (data) {
+          socketConnection.emit("message-page", params.userId);
+          socketConnection?.on("message", (data) => {
+            setAllMessage(data);
+          });
+        }
+      });
+    }
+  };
+
+  // console.log(allMessage);
+  console.log(selectedMessagesList);
   return (
     <div className="relative bg-bgImg bg-cover bg-center h-full w-full">
       {/* Header */}
-      <MessagePageHeader user={dataUser} />
+      <MessagePageHeader
+        user={dataUser}
+        selectedMessagesList={selectedMessagesList}
+        handleDeleteChat={handleDeleteChat}
+      />
 
       {/***show all message */}
       <section className="h-[calc(100vh-120px)]  overflow-x-hidden overflow-y-scroll scrollbar  relative bg-slate-200 bg-opacity-50">
@@ -216,38 +263,56 @@ const MessagePage = () => {
         <div
           className=" w-full flex flex-col gap-2 py-2 px-2 "
           ref={currentMessage}
+          onDoubleClick={handleMsgDblClick}
         >
           {allMessage.map((msg, index) => {
             return (
-              <div
-                key={index}
-                className={` p-1 py-1 rounded w-fit max-w-[280px] md:max-w-sm lg:max-w-md ${
-                  user._id === msg?.msgByUserId
-                    ? "ml-auto bg-teal-100"
-                    : "bg-white"
-                }`}
-              >
-                <div className="w-full relative">
-                  {msg?.imageUrl && (
-                    <img
-                      src={msg?.imageUrl}
-                      className="w-full h-full object-scale-down"
-                    />
-                  )}
-                  {msg?.videoUrl && (
-                    <video
-                      src={msg.videoUrl}
-                      className="w-full h-full object-scale-down"
-                      controls
-                    />
-                  )}
+              <div className="flex gap-3" key={index}>
+                {/* checkbox */}
+                {selectedMessagesList.length != 0 && (
+                  <input
+                    type="checkbox"
+                    name="chat-checkbox"
+                    id="chat-checkbox"
+                    className="ring-0 size-4 self-center"
+                    value={msg?._id}
+                    checked={
+                      selectedMessagesList.includes(msg?._id) ? true : false
+                    }
+                    onChange={handleSelectedChat}
+                  />
+                )}
+
+                <div
+                  className={`message p-1 py-1 rounded w-fit max-w-[280px] md:max-w-sm lg:max-w-md ${
+                    user._id === msg?.msgByUserId
+                      ? "ml-auto bg-teal-100"
+                      : "bg-white"
+                  }`}
+                  data-id={msg?._id}
+                >
+                  <div className="w-full relative">
+                    {msg?.imageUrl && (
+                      <img
+                        src={msg?.imageUrl}
+                        className="w-full h-full object-scale-down"
+                      />
+                    )}
+                    {msg?.videoUrl && (
+                      <video
+                        src={msg.videoUrl}
+                        className="w-full h-full object-scale-down"
+                        controls
+                      />
+                    )}
+                  </div>
+                  <p className="px-2">
+                    {msg.text}
+                    <span className="text-xs ml-4 float-end inline-block  w-fit">
+                      {moment(msg.createdAt).format("HH:mm")}
+                    </span>
+                  </p>
                 </div>
-                <p className="px-2">
-                  {msg.text}
-                  <span className="text-xs ml-4 float-end inline-block  w-fit">
-                    {moment(msg.createdAt).format("HH:mm")}
-                  </span>
-                </p>
               </div>
             );
           })}
